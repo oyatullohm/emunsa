@@ -13,13 +13,17 @@
         <div class="col " ><!-- Button trigger modal -->
             <div class="row">
                 <div class="col">
-                 <button class="btn btn-info" >  <span style="color: #000000;" >{{price.0.product}}</span></button>
-                  <button type="button"  class="btn btn-primary" >
-                      <a href="/" style="color: #000000;">Bosh sahifa</a>
-                  </button>
-                    <button type="button"  class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        Ritsep Qoshish
-                    </button>
+                    <nav class="navbar bg-body-tertiary">
+
+                        <a type="button"  href="/" class="btn btn-outline-primary me-" >Bosh sahifa</a>
+                        <button type="button"  class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                          Ritsep Qoshish
+                        </button>
+                        <button class=" btn btn-outline-info me- "> {{price.0.product}}</button>
+                    </nav><!-- Button trigger modal -->
+
+
+
                 </div>
             </div>
             <!-- Modal -->
