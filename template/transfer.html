@@ -1,0 +1,397 @@
+{% extends 'wrapper.html' %}
+{% block content %}
+{% load i18n %}
+<div class="form-group">
+    <div class="row">
+        <div class="col-3">
+
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#inlineForm">
+                {% trans 'Transfer' %}
+            </button>
+        </div>
+            <div class="col-5">
+            <div class="input-group">
+                
+                <input type="search" id="form1" class="form-control" placeholder="Search">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade text-left" id="inlineForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel33"> {% trans 'Add transfer' %}</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form method="post">
+                        {% csrf_token %}
+                   
+                    <div class="form-group mb-1">
+                        <label for="description" class="form-label"> {% trans 'From whom' %}</label>
+                        <select name="teacher_1" required  id="teacher_1" class="form-control">
+
+                            {% for i in teachar %}
+
+                            <option value="{{ i.id }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div> 
+                    <div class="form-group mb-1">
+                        <label for="description" class="form-label"> {% trans 'To whom' %}</label>
+                        <select name="teacher_2"  id="teacher_2" class="form-control">
+                            {% for i in teachar %}
+                            <option value="{{ i.id }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="amount" class="form-label">{% trans 'Som' %}</label>
+                        <input type="number" name="amount" required id="amount" class="form-control"  placeholder="Summa">
+                    </div>
+                    <div class="form-group mb-1">
+                        <label for="description" class="form-label">{% trans 'Comment' %}</label>
+                        <input type="text" name="payment_description" required id="transfer_description" class="form-control" placeholder="Izoh">
+                    </div>
+                 </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                            
+                            <span >{% trans 'Close' %}</span>
+                        </button>
+                        <button type="button" class="btn btn-primary ms-1" id="transfer_create">
+                         
+                            <span >{% trans 'Save' %} {{request.LANGUAGE}}</span>
+                        </button>
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<section class="section">
+    <div class="row" id="basic-table">
+        <div class="col-12 col-md-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <h4> {% trans 'Transfer' %}</h4>
+                            <table class="table table-lg">
+                                <thead>
+                                    <tr>
+                                        <th> {% trans 'Date' %}</th>
+                                        <th>{% trans 'Employee' %}</th>
+                                        <th>{% trans 'From whom' %}</th>
+                                        <th>{% trans 'To whom' %}</th>
+                                        <th>{% trans 'Som' %}</th>
+                                        <th>{% trans 'Info' %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="search-results">
+                                    {% for t in transfer %}
+                                    <tr>
+                                        <td class="text-bold-500" data-bs-toggle="modal" data-bs-target="#inlineForm{{ t.id }}">
+                                            {{ t.date |date:"d-m-Y"}}
+                                        </td>
+                                        <td class="text-bold-500">{{ t.user }} </td>
+                                        <td class="text-bold-500">{{ t.teacher_1 }} </td>
+                                        <td class="text-bold-500">{{ t.teacher_2 }}</td>
+                                        <td class="text-bold-500">{{ t.summa }}</td>
+                                        <td class="text-bold-500"><a href="#"  id="info-{{ t.id }}" 
+                                            data-izoh="{{t.description}}"
+                                            data-name_1="{{t.teacher_1}}"
+                                            data-1_before_cash="{{t.teacher_1_before_cash}}"
+                                            data-1_after_cash="{{t.teacher_1_after_cash}}"
+                                            
+                                            data-name_2="{{t.teacher_2}}"
+                                            data-2_after_cash="{{t.teacher_2_after_cash}}"
+                                            data-2_before_cash="{{t.teacher_2_before_cash}}"
+                                            >  {% trans 'Info' %}</a>
+                                            
+                                        </td>
+                                    </tr>
+                                    
+                                    
+                                    {% endfor %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+{% if transfer.paginator.num_pages > 1 %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination pagination-primary justify-content-end">
+        {% if transfer.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ transfer.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="First">
+                    <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
+                </a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true"><i class="bi bi-chevron-left"></i></span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% for num in transfer.paginator.page_range %}
+            {% if transfer.number == num %}
+                <li class="page-item active">
+                    <a class="page-link" href="#">{{ num }}</a>
+                </li>
+            {% elif num > transfer.number|add:-3 and num < transfer.number|add:3 %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if transfer.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ transfer.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ transfer.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true"><i class="bi bi-chevron-right"></i></span>
+                </a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Last">
+                    <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+// document.getElementById('inlineForm').addEventListener('shown.bs.modal', function () {
+    document.getElementById('transfer_create').addEventListener('click', function() {
+        const amountElement = document.getElementById('amount');
+        console.log(amountElement)
+        const descriptionElement = document.getElementById('transfer_description');
+        const teacher1Element = document.getElementById('teacher_1');
+        const teacher2Element = document.getElementById('teacher_2');
+
+        if (!amountElement || !descriptionElement || !teacher1Element || !teacher2Element) {
+            console.error('Required elements not found in the DOM.');
+            return;
+        }
+
+        const amount = amountElement.value;
+        console.log(amount)
+        const description = descriptionElement.value;
+        const teacher_1 = teacher1Element.value;
+        const teacher_2 = teacher2Element.value;
+        console.log(teacher_1)
+        console.log(teacher_2)
+        console.log(description)
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        console.log(csrfToken)
+        console.log(22222)
+        fetch('/{{ request.LANGUAGE_CODE }}/transfer-create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: new URLSearchParams({
+                'amount': amount,
+                'description': description,
+                'teacher_1': teacher_1,
+                'teacher_2': teacher_2
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                var modal = bootstrap.Modal.getInstance(document.getElementById('inlineForm'));
+                modal.hide();
+            } else {
+                console.error('Create failed:', data.message);
+            }
+        })
+        .catch(error => console.error('Xato:', error));
+    });
+// });
+
+
+
+
+    document.getElementById('teacher_1').addEventListener('change', function() {
+        var teacherId = this.value;
+        fetch(`/get-teacher-cash/?teacher_id=` + teacherId)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('amount').value = data.cash;
+            });
+    });
+
+
+
+
+
+const Swal2 = Swal.mixin({
+  customClass: {
+    input: 'form-control'
+  }
+})
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
+
+document.querySelectorAll('[id^="info-"]').forEach(button => {
+  button.addEventListener("click", (e) => {
+    const izoh = e.target.getAttribute('data-izoh');
+    const teacher_1 = e.target.getAttribute('data-name_1');
+    const before_cas_1= e.target.getAttribute('data-1_before_cash');
+    const after_cas_1= e.target.getAttribute('data-1_after_cash');
+    
+    
+    const teacher_2 = e.target.getAttribute('data-name_2');
+    const before_cas_2= e.target.getAttribute('data-2_before_cash');
+    const after_cas_2= e.target.getAttribute('data-2_after_cash');
+
+    Swal2.fire({
+      icon: "info",
+      title: `  ${teacher_1} \nOldin ${before_cas_1} sum    Kegin  ${after_cas_1}
+        \n ${teacher_2} \nOldin ${before_cas_2} sum    Kegin  ${after_cas_2} \n
+        ${izoh}  `,
+      
+    });
+  });
+});
+
+
+
+
+
+
+$(document).ready(function() {
+    // search inputiga event listener qo'shish
+    $('#form1').on('keyup', function() {
+        console.log(111111)
+        let query = $(this).val();
+        if (query.length > 2) {
+            $.ajax({
+                url: '/search-transfer/',  // O'z URL manzilingizni kiriting
+                data: {
+                    'query': query
+                },
+                dataType: 'json',
+                success: function(data) {
+                    let tbody = $('#search-results');
+                    tbody.empty();  // Jadvalning tanlangan qismidagi eski natijalarni tozalash
+                    
+                    $.each(data, function(index, item) {
+                        let row = `
+                            <tr>
+                                <td class="text-bold-500" >
+                                  ${item.date}
+                                </td>
+                             
+                                <td class="text-bold-500">${item.user__username} </td>
+                                <td class="text-bold-500">${item.teacher_1__username}  </td>
+                                <td class="text-bold-500">${item.teacher_2__username}  </td>
+                                <td class="text-bold-500">${item.summa}</td>
+                                <td class="text-bold-500">
+                                    <a href="#" id="info-${index}" 
+                                        data-izoh="${item.description}"
+                                        
+                                        data-name_1="${item.teacher_1__username}"
+                                        data-name_2="${item.teacher_2__username}"
+                                        data-1_before_cash="${item.teacher_1_before_cash || ''}"
+                                        data-1_after_cash="${item.teacher_1_after_cash || ''}" 
+
+                                        data-2_before_cash="${item.teacher_2_before_cash || ''}"
+                                        data-2_after_cash="${item.teacher_2_after_cash || ''}"
+                                        >Info</a>
+                                </td>
+                            </tr>`;
+                        tbody.append(row);  // Jadval qismiga yangi qator qo'shish
+                    });
+
+                    // Dinamik ravishda yaratilgan elementlar uchun event delegation
+                    $(document).on('click', '[id^="info-"]', function(e) {
+                        const teacher_1 = $(this).data('name_1');
+                        
+                        const teacer_1_before = $(this).data('1_before_cash');
+                        const teacher_1_after = $(this).data('1_after_cash');
+                        
+                        const teacher_2 = $(this).data('name_2');
+                        const teacer_2_before = $(this).data('2_before_cash');
+                        const teacher_2_after = $(this).data('1_after_cash');
+                        
+                        const izoh = $(this).data('izoh');
+
+                        Swal.fire({
+                            icon: "info",
+                            title: `${teacher_1} oldin ${teacer_1_before} Sum\n 
+                                    kegin ${teacher_1_after} Sum\n 
+                                    ${teacher_2} Oldin ${teacer_2_before} \n
+                                    ${teacher_2_after} Sum \n
+                                    ${izoh}`,
+                        });
+                    });
+                }
+            });
+        }
+    });
+});
+
+</script>
+
+{% endblock content %}
