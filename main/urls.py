@@ -1,9 +1,11 @@
 from django.urls import path
-from .views import HomeView , detail , price_create ,prise_update ,login_ , logout_view
+from .views import *
 app_name = 'main'
 
 urlpatterns  = [
-    path('', HomeView.as_view() , name='home'),
+    path('', HomeVIew.as_view() , name='home'),
+    path('emunsa/', EmunsaView.as_view() , name='emunsa'),
+    path('client/', ClientViev.as_view() , name='client'),
     path('login/', login_ , name='login'),
     path('logout/', logout_view, name='logout'),
     path('detail/<int:pk>',detail,name='detail'),

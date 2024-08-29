@@ -36,8 +36,7 @@
 </head>
 
 <body>
-    
-{% load i18n %}
+
 
     <script src="/static/assets/static/js/initTheme.js"></script>
 
@@ -51,7 +50,7 @@
 
         <div class="d-flex justify-content-between align-items-center">
             <div class="logo">
-                <a href="{% url 'home' %}"><img src="/static/assets/compiled/svg/bw.png"  height="50px" alt="Logo" srcset=""> <span style="font-size: 22px;">BW</span></a>
+            <span style="font-size: 22px;">Emunsa</span></a>
             </div>
             <div class="theme-toggle d-flex gap-2  align-items-center mt-2">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"
@@ -92,9 +91,17 @@
             
             <li
                 class="sidebar-item ">
-                <a href="{% url 'home' %}" class='sidebar-link'>
-                    <i class="bi bi-grid-fill"></i>
-                    <span> {% trans 'Home' %}</span>
+                <a href="{% url 'main:home' %}" class='sidebar-link'>
+                    <i class="bi bi-house-fill"></i>
+                    <span>Home</span>
+                </a>
+
+            </li>
+            <li
+                class="sidebar-item ">
+                <a href="{% url 'main:emunsa' %}" class='sidebar-link'>
+                    <i class="bi bi-bucket-fill"></i>
+                    <span>Eminsa</span>
                 </a>
 
             </li>
@@ -106,43 +113,39 @@
                 class="sidebar-item  has-sub">
                 <a href="#" class='sidebar-link'>
                     <i class="bi bi-people"></i>
-                    <span>  {% trans 'Group' %}</span>
+                    <span>Client</span>
                 </a>
                 
                 <ul class="submenu ">
                     <li class="submenu-item  ">
-                        <a href="{% url 'teacher' %}" class="submenu-link">  {% trans 'Educator' %}</a>
+                        <a href="/client/?type=1" class="submenu-link"> Taminotchi </a>
                         
                     </li>
 
                     
                     <li class="submenu-item  ">
-                        <a href="{% url 'group' %}" class="submenu-link">  {% trans 'Grup' %}</a>
+                        <a href="/client/?type=2" class="submenu-link">Haridor</a>
                     </li>
-                    <li class="submenu-item  ">
-                        <a href="{% url 'child' %}" class="submenu-link">  {% trans 'Children' %}</a>
-                    </li>
-                    
                 </ul>
                 
 
             </li>
             <li
             class="sidebar-item  ">
-            <a href="{% url 'tarif' %}" class='sidebar-link'>
+            <a href="" class='sidebar-link'>
                <i class="bi bi-sliders"></i>
-                <span>  {% trans 'Tariffs' %}</span>
+                <span> d</span>
             </a>
             
             
 
         </li>
-            {% if request.user.is_payment %}
+          
             <li
                 class="sidebar-item  ">
-                <a href="{% url 'transfer' %}" class='sidebar-link'>
+                <a href="" class='sidebar-link'>
                    <i class="bi bi-arrow-left-right"></i>
-                    <span>{% trans 'Transfer' %}</span>
+                    <span>df</span>
                 </a>
                 
 
@@ -153,34 +156,34 @@
                 <a href="#" class='sidebar-link'>
                    <i class="bi bi-wallet2"></i>
                   
-                    <span>{% trans 'Payments' %}</span>
+                    <span>sss</span>
                 </a>
                 <ul class="submenu">
                     <li class="submenu-item  ">
-                        <a href="{% url 'payment' %}" class="submenu-link">  {% trans 'Income' %} </a>
+                        <a href="" class="submenu-link">  ss </a>
                         
                     </li>
                     
                     <li class="submenu-item  ">
-                        <a href="{% url 'payment_cost' %}" class="submenu-link">   {% trans 'Expenses' %} </a>
+                        <a href="" class="submenu-link">   dd</a>
                         
                     </li>
                 </ul>
             </li>
              <li
                 class="sidebar-item  ">
-                <a href="{% url 'cash' %}" class='sidebar-link'>
+                <a href="" class='sidebar-link'>
                    <i class="bi bi-currency-dollar"></i>
-                    <span>  {% trans 'Cash' %}</span>
+                    <span> ff</span>
                 </a>
             </li>
-            {% endif %}
+       
         
         <li
             class="sidebar-item  ">
-            <a href="{% url 'settings' %}" class='sidebar-link'>
+            <a href="" class='sidebar-link'>
                <i class="bi bi-gear"></i>
-                <span> {% trans 'Settings' %}</span>
+                <span>f</span>
             </a>
             
 
@@ -188,9 +191,9 @@
        
         <li
             class="sidebar-item  ">
-            <a href="{% url 'logout' %}" class='sidebar-link'>
+            <a href="{% url 'main:logout' %}" class='sidebar-link'>
                 <i class="bi bi-box-arrow-left"></i>
-                <span> {% trans 'Logout' %}</span>
+                <span> Chiqish </span>
             </a>
             
 
@@ -228,7 +231,7 @@
                
             </ul>
                 {% endfor %}
-{% endif %}
+        {% endif %}
 
 {% block content %}
 

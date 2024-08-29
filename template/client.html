@@ -6,12 +6,11 @@
             <div class="row">
                 <div class="col">
                     <nav class="navbar bg-body-tertiary">
-
-                      
+                       
                         <button type="button"  class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                          Ritsep Qoshish
+                          Client Qo'shish
                         </button>
-                        <button class=" btn btn-outline-info me- "> {{price.0.product}}</button>
+                      
                     </nav><!-- Button trigger modal -->
 
 
@@ -23,14 +22,23 @@
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Ritsep Qoshish </h1>
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Client</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  <form action="/create/prise/{{product_id}}" method="post" >
+                  <form action="" method="post" >
                     {% csrf_token %}
-                    <input type="text" class="form-control" placeholder="Ritsep nomi" required name="rang"  aria-label="" aria-describedby="basic-addon1">
-                    <input type="number" step=0.01  class="form-control" placeholder="Kl" required name="kl"  aria-label="" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" placeholder="Ism" required name="mane"  aria-label="" aria-describedby="basic-addon1">
+                    <br>
+                    <input type="text"   class="form-control" placeholder="Tell" required name="phone"  aria-label="" aria-describedby="basic-addon1">
+                    <br>
+                    <select name="client" id=""  class="form-select" aria-label="Default select example" >
+                      
+                      <option value="2">Haridor </option>
+                      <option value="1">Taminotchi</option>
+                    </select>
+                    <br>
                     <input type="number" step=0.01 class="form-control" placeholder="summa" required name="sum"  aria-label="" aria-describedby="basic-addon1">
+                    <br>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">ok</button>
                       </div>
@@ -43,15 +51,15 @@
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Ritsep</th>
-                    <th scope="col">Kl</th>
-                    <th scope="col">Narh</th>
-                    <th scope="col">O'zgartirish</th>
+                    <th scope="col">Ism</th>
+                    <th scope="col">Tell</th>
+                    <th scope="col">Qarzi</th>
+                    <th scope="col"><a href="">Info</a></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    {% for i in price %}
+                    {% for i in client %}
 
                       <div class="modal fade" id="exampleModal{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel{{i.id}}" aria-hidden="true">
                         <div class="modal-dialog">
@@ -60,7 +68,7 @@
                               <h1 class="modal-title fs-5" id="exampleModalLabel">{{i.color}}</h1>
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form action="/update/price/{{i.id}}" method="post"> 
+                            <form action="" method="post"> 
                               {% csrf_token%}
 
                               <input type="text" class="form-control" value="{{i.color}}"  placeholder="Ritsep nomi" required name="rang"  aria-label="" aria-describedby="basic-addon1">

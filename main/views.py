@@ -1,20 +1,30 @@
 from django.shortcuts import render ,redirect
-from django.views import View
+from django.views import View 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Product , Price
 from django.contrib.auth import authenticate, login ,logout 
 
-class HomeView(View):
+class HomeVIew(LoginRequiredMixin,View):
+    login_url = '/login/'
+    def get(self,request):
+        return render(request,'home.html')
+    
+
+class EmunsaView(View):
     def get(self,request):
         if request.user.is_authenticated :
             product = Product.objects.all()
             return render(request,'index.html',{'product':product})
         return redirect('main:login')
+
+
     def post(self,request):
         if request.user.is_authenticated :
             product = request.POST.get('product')
             Product.objects.create(name=product)
             return redirect ('main:home')
         return redirect('main:login')
+    
 def detail(request,pk):
     if request.user.is_authenticated :
         price =Price.objects.filter(product=pk)
@@ -81,3 +91,8 @@ def login_(request):
 def logout_view(request):
     logout(request)
     return redirect('/login')
+
+class ClientViev(LoginRequiredMixin ,View):
+    login_url = '/login/'
+    def get(self, request):
+        return render (request, 'client.html')
