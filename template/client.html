@@ -27,11 +27,11 @@
                   </div>
                   <form action="" method="post" >
                     {% csrf_token %}
-                    <input type="text" class="form-control" placeholder="Ism" required name="mane"  aria-label="" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" placeholder="Ism" required name="name"  aria-label="" aria-describedby="basic-addon1">
                     <br>
                     <input type="text"   class="form-control" placeholder="Tell" required name="phone"  aria-label="" aria-describedby="basic-addon1">
                     <br>
-                    <select name="client" id=""  class="form-select" aria-label="Default select example" >
+                    <select name="type" id=""  class="form-select" aria-label="Default select example" >
                       
                       <option value="2">Haridor </option>
                       <option value="1">Taminotchi</option>
@@ -54,7 +54,7 @@
                     <th scope="col">Ism</th>
                     <th scope="col">Tell</th>
                     <th scope="col">Qarzi</th>
-                    <th scope="col"><a href="">Info</a></th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -65,7 +65,7 @@
                         <div class="modal-dialog">
                           <div class="modal-content">
                             <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="exampleModalLabel">{{i.color}}</h1>
+                              <h1 class="modal-title fs-5" id="exampleModalLabel">{{i.name}}</h1>
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <form action="" method="post"> 
@@ -82,10 +82,10 @@
                         </div>
                       </div>
                     <th scpeo="row">{{ forloop.counter }}</th>
-                    <td> {{i.color }}</td>
-                    <td>  {{i.kl}}</td>
-                    <td> {{i.sum }}sum</td>
-                    <td> <a href="" data-bs-toggle="modal" data-bs-target="#exampleModal{{i.id}}" class="btn btn-dark"> O'zgartirish </a></td>
+                    <td> {{i.name }}</td>
+                    <td>  {{i.phone}}</td>
+                    <td> {{i.amount }}sum</td>
+    
                     </tr>
                     {% endfor %}
                      </tbody>

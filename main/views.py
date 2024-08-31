@@ -1,9 +1,9 @@
 from django.shortcuts import render ,redirect
 from django.views import View 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Product , Price
+from .models import *
 from django.contrib.auth import authenticate, login ,logout 
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage 
 class HomeVIew(LoginRequiredMixin,View):
     login_url = '/login/'
     def get(self,request):
@@ -13,7 +13,7 @@ class HomeVIew(LoginRequiredMixin,View):
 class EmunsaView(View):
     def get(self,request):
         if request.user.is_authenticated :
-            product = Product.objects.all()
+            product = Product.objects.filter(type=2)
             return render(request,'index.html',{'product':product})
         return redirect('main:login')
 
@@ -21,9 +21,26 @@ class EmunsaView(View):
     def post(self,request):
         if request.user.is_authenticated :
             product = request.POST.get('product')
-            Product.objects.create(name=product)
+            Product.objects.create(name=product,type=2)
             return redirect ('main:home')
         return redirect('main:login')
+
+
+
+class ProductView(LoginRequiredMixin,View):
+    login_url = '/login/'
+    def get(self,request):
+        product = Product_Count.objects.filter(product__type=1)
+        return render(request, 'product.html',context={'product':product})
+    
+    def post (self,request):
+        name = request.POST.get('name')
+        count = request.POST.get('soni')
+        sum = request.POST.get('narhi')
+        product = Product.objects.create(name=name,type=1)
+        Product_Count.objects.create(product=product, count=count, sum=sum)
+        return redirect ('main:tavar')
+        
     
 def detail(request,pk):
     if request.user.is_authenticated :
@@ -95,4 +112,43 @@ def logout_view(request):
 class ClientViev(LoginRequiredMixin ,View):
     login_url = '/login/'
     def get(self, request):
-        return render (request, 'client.html')
+        type = request.GET.get('type')
+        client =  Client.objects.filter(type=type)
+        
+        return render (request, 'client.html' ,{'client':client})
+    def post(self, request):
+        type = request.POST.get('type')
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        amount = request.POST.get('sum')
+        Client.objects.create(
+            type = type,
+            name= name,
+            phone=phone,
+            amount = amount
+        )
+        return redirect(f'/client/?type={type}' )
+        
+class OrderView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    def get(self, request):
+        page = request.GET.get('page')
+        print(page)
+        product = Product_Count.objects.all()
+        order = Order.objects.all().order_by('-id')
+        client = Client.objects.filter(type=2)
+        paginator = Paginator(order, 2)
+        try:
+            paginated= paginator.page(page)
+        except PageNotAnInteger:
+            paginated= paginator.page(1)
+        except EmptyPage:
+            paginated= paginator.page(paginator.num_pages)
+        context = {
+            'client':client,
+            'page_obj': paginated,
+            'product':product,
+        }
+        return render(request, 'order.html',context)
+
+        
