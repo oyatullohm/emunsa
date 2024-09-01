@@ -137,13 +137,22 @@
                 <span> Tavar</span>
             </a>
 
-        </li>
+            </li>
           
             <li
                 class="sidebar-item  ">
                 <a href="{% url 'main:order' %}" class='sidebar-link'>
                     <i class="bi bi-cart4"></i>
-                    <span>Savdo</span>
+                    <span>Sotish</span>
+                </a>
+                
+
+            </li>  
+             <li
+                class="sidebar-item  ">
+                <a href="{% url 'main:income' %}" class='sidebar-link'>
+                    <i class="bi bi-cart-check-fill"></i>
+                    <span>Sotib olish</span>
                 </a>
                 
 
@@ -158,30 +167,34 @@
                 </a>
                 <ul class="submenu">
                     <li class="submenu-item  ">
-                        <a href="" class="submenu-link"> Kirim </a>
+                        <a href="{% url 'main:payment' %}?type=1" class="submenu-link"> Oldim </a>
                         
                     </li>
                     
                     <li class="submenu-item  ">
-                        <a href="" class="submenu-link"> Chiqim</a>
+                        <a href="{% url 'main:payment' %}?type=2" class="submenu-link"> Berdim</a>
+                        
+                    </li>
+                    <li class="submenu-item  ">
+                        <a href="{% url 'main:payment' %}?type=3" class="submenu-link"> Ishlatdim</a>
                         
                     </li>
                 </ul>
             </li>
              <li
                 class="sidebar-item  ">
-                <a href="" class='sidebar-link'>
+                <a href="{% url 'main:cash' %}" class='sidebar-link'>
                    <i class="bi bi-currency-dollar"></i>
-                    <span> ff</span>
+                    <span> Kassa </span>
                 </a>
             </li>
        
         
         <li
             class="sidebar-item  ">
-            <a href="" class='sidebar-link'>
+            <a href="{% url 'main:settings' %}" class='sidebar-link'>
                <i class="bi bi-gear"></i>
-                <span>f</span>
+                <span>Settings</span>
             </a>
             
 

@@ -43,14 +43,15 @@ class Client(models.Model):
     phone = models.CharField(max_length=55)
     name = models.CharField(max_length=55)
     amount = models.FloatField(default=0)
-    def __str__(self) -> str:
+    def __str__(self) :
         return self.name
 
 
 class Payment(models.Model):
     TYPE = (
         (1,"Kirim"),
-        (2,"Chiqim")
+        (2,"Chiqim"),
+        (3,"Ishlatdim"),
     )
     client = models.ForeignKey(Client,on_delete=models.SET_NULL, null=True, blank=True)
     type = models.IntegerField(choices=TYPE, default=1)
@@ -61,14 +62,14 @@ class Payment(models.Model):
     cash_after_amount = models.FloatField(default=0)
     date = models.DateField()
     amount = models.FloatField(default=0)
-    def __str__(self) -> str:
+    def __str__(self) :
         return f"{self.amount}"
 
 
 class Cash(models.Model):
     amount = models.FloatField(default=0)
     
-    def __str__(self) -> str:
+    def __str__(self) :
         return f"{self.amount}"
 
 
@@ -76,7 +77,10 @@ class IncomeItem(models.Model):
     product = models.ForeignKey(Product_Count, on_delete=models.CASCADE)
     count = models.PositiveIntegerField(default=0)
     price = models.FloatField(default=0)
-    
+    @property
+    def total_price(self):
+        return self.price *self.count 
+
 
 class Income(models.Model):
     client = models.ForeignKey(Client,on_delete=models.SET_NULL, null=True, blank=True, related_name='income_clients')
@@ -85,14 +89,20 @@ class Income(models.Model):
     cource = models.PositiveIntegerField(default=0)
     client_before = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     client_after = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-   
+    loan = models.BooleanField(default=False)
     @property
     def total_summa(self):
         total = self.items.all().aggregate(
             total=Sum(F('count') * F('price'))
         )['total'] or 0
         return total
-
+    
+    @property
+    def loan_type(self):
+        if self.loan:
+            return "nasya"
+        return "naq"
+    
     
 class OrderItem(models.Model):
     product = models.ForeignKey(Product_Count, on_delete=models.CASCADE)
@@ -125,6 +135,7 @@ class Order(models.Model):
             total=Sum(F('count') * F('price'))
         )['total'] or 0
         return total
+
 
 class Cource(models.Model):
     cource = models.PositiveIntegerField(default=0)
