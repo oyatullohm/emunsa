@@ -22,7 +22,7 @@ class EmunsaView(View):
         if request.user.is_authenticated :
             product = request.POST.get('product')
             Product.objects.create(name=product,type=2)
-            return redirect ('main:home')
+            return redirect ('main:emunsa')
         return redirect('main:login')
 
 
@@ -133,7 +133,6 @@ class OrderView(LoginRequiredMixin, View):
     login_url = '/login/'
     def get(self, request):
         page = request.GET.get('page')
-        print(page)
         product = Product_Count.objects.all()
         order = Order.objects.all().order_by('-id')
         client = Client.objects.filter(type=2)

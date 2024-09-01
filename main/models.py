@@ -32,7 +32,8 @@ class Product_Count(models.Model):
     @property
     def total_summa(self):
         return self.count * self.sum
-    
+
+   
 class Client(models.Model):
     TYPE= (
         (1,"Taminotchi"),
@@ -53,6 +54,7 @@ class Payment(models.Model):
     )
     client = models.ForeignKey(Client,on_delete=models.SET_NULL, null=True, blank=True)
     type = models.IntegerField(choices=TYPE, default=1)
+    cource = models.PositiveIntegerField(default=0)
     client_before_amount = models.FloatField(default=0)
     client_after_amount = models.FloatField(default=0)
     cash_before_amount = models.FloatField(default=0)
@@ -69,13 +71,12 @@ class Cash(models.Model):
     def __str__(self) -> str:
         return f"{self.amount}"
 
+
 class IncomeItem(models.Model):
     product = models.ForeignKey(Product_Count, on_delete=models.CASCADE)
     count = models.PositiveIntegerField(default=0)
     price = models.FloatField(default=0)
     
-
-
 
 class Income(models.Model):
     client = models.ForeignKey(Client,on_delete=models.SET_NULL, null=True, blank=True, related_name='income_clients')
@@ -91,8 +92,6 @@ class Income(models.Model):
             total=Sum(F('count') * F('price'))
         )['total'] or 0
         return total
-
-
 
     
 class OrderItem(models.Model):
@@ -112,10 +111,24 @@ class Order(models.Model):
     cource = models.PositiveIntegerField(default=0)
     client_before = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     client_after = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    loan = models.BooleanField(default=False)
 
+    @property
+    def loan_type(self):
+        if self.loan:
+            return "nasya"
+        return "naq"
+    
     @property
     def total_summa(self):
         total = self.items.all().aggregate(
             total=Sum(F('count') * F('price'))
         )['total'] or 0
         return total
+
+class Cource(models.Model):
+    cource = models.PositiveIntegerField(default=0)
+    date = models.DateField()
+
+    def __str__(self) -> str:
+        return f"{self.cource}"

@@ -104,7 +104,7 @@
           <h2 class="accordion-header" id="headingOne{{i.id}}">
           
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{i.id}}" aria-expanded="true" aria-controls="collapseOne{{i.id}}">
-              <span style="margin-right: 20px;">{{ i.date }}</span><span style="margin-right: 20px;">{{ i.client }}</span><span style="margin-right: 20px;">{{ i.total_summa }} </span> Som
+              <span style="margin-right: 20px;">{{ i.date|date:"d-m-Y" }}</span><span style="margin-right: 20px;">{{ i.client }}</span><span style="margin-right: 20px;">{{ i.total_summa }} </span> Som
             </button>
           </h2>
           <div id="collapseOne{{i.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne{{i.id}}" data-bs-parent="#accordionExample">
@@ -119,13 +119,20 @@
                 </tr>
               </thead>
               <tbody>
-                {% for i in i.items.all %}
+                {% for j in i.items.all %}
                 <tr>
-                  <td>{{i.product.name}}</td>
-                  <td>{{i.count}}</td>
-                  <td>{{i.price }} </td>
-                  <td>{{i.total_price}} </td>
+                  <td>{{j.product.product.name}}</td>
+                  <td>{{j.count}}</td>
+                  <td>{{j.price }} </td>
+                  <td>{{j.total_price}} </td>
                 </tr>
+                {% if i.client %}
+                <tr>
+                  <td>{{i.loan_type}}</td>
+                  <td>{{i.cource}}</td>
+                  <td> <span style="margin-right: 20px;">  </span> <span style="margin-right: 20px;">{{i.client_before}}  </span> <span style="margin-right: 20px;"> </span><span style="margin-right: 20px;">{{i.client_after}} </span></td>
+                </tr>
+                {% endif %}
                 {% endfor %}
               </tbody>
             </table>
