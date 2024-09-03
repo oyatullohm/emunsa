@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from django.db.models.functions import Coalesce
 from dateutil.relativedelta import relativedelta
 from django.db.models.functions import TruncMonth
+from django.contrib.auth.decorators import login_required
 
 
 class HomeVIew(LoginRequiredMixin,View):
@@ -131,7 +132,7 @@ class EmunsaView(View):
 class ProductView(LoginRequiredMixin,View):
     login_url = '/login/'
     def get(self,request):
-        product = Product_Count.objects.filter(product__type=1)
+        product = Product_Count.objects.filter(product__type=1).select_related('product')
         return render(request, 'product.html',context={'product':product})
     
     def post (self,request):
@@ -142,7 +143,6 @@ class ProductView(LoginRequiredMixin,View):
         Product_Count.objects.create(product=product, count=count, sum=sum)
         return redirect ('main:tavar')
         
-    
 
 class ClientViev(LoginRequiredMixin ,View):
 
@@ -170,8 +170,13 @@ class OrderView(LoginRequiredMixin, View):
     login_url = '/login/'
     def get(self, request):
         page = request.GET.get('page')
-        product = Product_Count.objects.all()
-        order = Order.objects.all().order_by('-id')
+        product = Product_Count.objects.all().select_related('product')
+        order = (
+            Order.objects.all()
+            .order_by('-id')
+            .select_related('client')  # ForeignKey ma'lumotlarini oldindan yuklash
+            .prefetch_related('items', 'items__product')  # ManyToMany va ForeignKey bo'lgan ma'lumotlarni oldindan yuklash
+        )
         client = Client.objects.filter(type=2)
         paginator = Paginator(order, 10)
         try:
@@ -192,8 +197,10 @@ class IncomeView(LoginRequiredMixin, View):
     login_url = '/login/'
     def get(self, request):
         page = request.GET.get('page')
-        product = Product_Count.objects.all()
-        income = Income.objects.all().order_by('-id')
+        product = Product_Count.objects.all().select_related('product')
+        income = Income.objects.all().order_by('-id')\
+            .select_related('client')\
+            .prefetch_related('items', 'items__product') 
         client = Client.objects.filter(type=1)
         paginator = Paginator(income, 10)
         try:
@@ -216,7 +223,7 @@ class PaymentViev(LoginRequiredMixin,View):
         page = request.GET.get('page')
 
         type = request.GET.get('type')
-        payment = Payment.objects.filter(type=type).order_by('-id')
+        payment = Payment.objects.filter(type=type).order_by('-id').select_related('client')
         client = Client.objects.all()
         paginator = Paginator(payment, 10)
         try:
@@ -304,7 +311,8 @@ class CashView(LoginRequiredMixin, View):
         end_date = next_month - timedelta(days=next_month.day)  # Tanlangan oyning oxirgi kuni
 
         cash = Cash.objects.last()
-        totals = Payment.objects.filter(date__range=(start_date, end_date)).aggregate(
+        totals = Payment.objects.filter(date__range=(start_date, end_date))\
+            .select_related('client').aggregate(
         payment=Sum(Case(When(type=1, then='amount'), default=Value(0), output_field=IntegerField())),
         payment_cost=Sum(Case(When(type=2, then='amount'), default=Value(0), output_field=IntegerField())),
         payment_=Sum(Case(When(type=3, then='amount'), default=Value(0), output_field=IntegerField()))
@@ -351,7 +359,7 @@ class SettingsView(LoginRequiredMixin, View):
 
 def detail(request,pk):
     if request.user.is_authenticated :
-        price =Price.objects.filter(product=pk)
+        price =Price.objects.filter(product=pk).select_related('product')
         return render(request,'detail.html',{'price':price,'product_id':pk})
     return redirect('main:login')
 
@@ -399,6 +407,174 @@ def prise_update(request,pk):
         product.save()
         return redirect(f'/detail/{product.id}')
     return redirect('main:login')
+
+
+@login_required
+def order_item_edit(requesr):
+    id = requesr.POST.get('id')
+    count = requesr.POST.get('count')
+    price = requesr.POST.get('price')
+    item = OrderItem.objects.get(id=id)
+    order = item.items.last()
+    if order.client and order.loan:
+        order.client.amount -= float(order.total_summa)
+        order.client_before = order.client.amount 
+        order.client.save()
+        product = item.product
+        product.count += item.count
+        product.save()
+        item.count = count 
+        item.price = price
+        item.save()
+        product.count -= int(item.count)
+        product.save()
+        order.client.amount += float(order.total_summa)
+        order.client_after = order.client.amount 
+        order.save()
+        order.client.save()
+        
+    elif order.client and not order.loan:
+        product = item.product
+        product.count += item.count
+        product.save()
+        item.count = count 
+        item.price = price
+        item.save()
+        product.count -= int(item.count)
+        product.save()
+    else:
+        product = item.product
+        product.count += item.count
+        product.save()
+        item.count = count 
+        item.price = price
+        item.save()
+        product.count -= int(item.count)
+        product.save()
+        
+    return redirect('/order/')
+
+
+@login_required
+def income_item_edit(request):
+    id = request.POST.get('id')
+    count = int(request.POST.get('count'))
+    price = float(request.POST.get('price'))
+    
+    item = IncomeItem.objects.get(id=id)
+    income = item.items.last()
+    
+    if income.client:
+        # Mavjud summani qayta qo'shish
+        income.client.amount += float(item.price * item.count)
+        income.client_before = income.client.amount 
+        
+        # Mahsulot miqdorini yangilash
+        product = item.product
+        product.count -= item.count  # Avvalgi miqdorni olib tashlash
+        product.count += count       # Yangi miqdorni qo'shish
+        
+        # Yangilangan ma'lumotlarni saqlash
+        product.save()
+        
+        # Yangi ma'lumotlarni saqlash
+        item.count = count 
+        item.price = price
+        item.save()
+        
+        # Yangi summa bo'yicha hisoblash
+        income.client.amount -= float(item.price * item.count)
+        income.client_after = income.client.amount 
+        
+        income.client.save()
+        income.save()
+        
+    # else:
+    #     product = item.product
+    #     product.count += item.count
+    #     product.save()
+    #     item.count = count 
+    #     item.price = price
+    #     item.save()
+    #     product.count -= int(item.count)
+    #     product.save()
+        
+    return redirect('/income/')
+
+
+@login_required
+def payment_edit(request):
+    type = request.GET.get('type')
+    id = request.POST.get('id')
+    amount = float(request.POST.get('amount'))
+    payment = Payment.objects.get(id=id)
+    cash = Cash.objects.last()
+
+    if payment.type == 1 or payment.type == '1':
+        client = payment.client
+        if client:
+
+            payment.cash_before_amount = cash.amount
+            cash.amount -= float(payment.amount)
+            cash.amount += float(amount)
+            payment.client_before_amount = payment.client.amount 
+            
+            client.amount +=  payment.amount - amount
+            client.save()
+            payment.client_after_amount = payment.client.amount 
+            cash.save()
+            payment.cash_after_amount = cash.amount
+            payment.amount  = amount
+            payment.save()
+        else:
+            payment.cash_before_amount = cash.amount
+            cash.amount -= float(payment.amount)
+            cash.amount += float(amount)
+            cash.save()
+           
+           
+            payment.cash_after_amount = cash.amount
+            payment.amount  = amount
+            payment.save()
+            
+    elif payment.type == 2 or payment.type == '2':
+        client = payment.client
+        if payment.client:
+            payment.cash_before_amount = cash.amount
+
+            cash.amount += float(payment.amount)
+            cash.amount -= float(amount)
+            cash.save()
+
+            payment.cash_after_amount = cash.amount
+            payment.client_before_amount = client.amount
+
+            client.amount -=  payment.amount - amount
+            client.save()
+
+
+            payment.client_after_amount =  client.amount 
+            payment.amount  = amount
+            payment.save()
+        else:
+            payment.cash_before_amount = cash.amount
+            cash.amount += float(payment.amount)
+            cash.amount -= float(amount)
+            cash.save()
+            payment.cash_after_amount = cash.amount
+            payment.amount  = amount
+            payment.save()
+
+    elif payment.type == 3 or payment.type == '3': 
+        payment.cash_before_amount = cash.amount
+        cash.amount += float(payment.amount)
+        cash.amount -= float(amount)
+        cash.save()
+        payment.cash_after_amount = cash.amount
+        payment.amount  = amount
+        payment.save()
+
+    return redirect(f'/payment/?type={type}')
 
 
 def login_(request):

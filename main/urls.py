@@ -16,8 +16,11 @@ urlpatterns  = [
     path('login/', login_ , name='login'),
     path('logout/', logout_view, name='logout'),
     path('save-data/', save_data, name='save_data'),
-    path('save-data/', save_data_income, name='save_data_income'),
+    path('payment-edit/',payment_edit,name='payment-edit'),
     path('detail/<int:pk>',detail,name='detail'),
-    path('update/price/<int:pk>',prise_update,name='create'),
+    path('order-item-edit/',order_item_edit,name='order_item_edit'),
+    path('income-item-edit/',income_item_edit,name='income_item_edit'),
+    path('income-save-data/', save_data_income, name='save_data_income'),
+    path('update/price/<int:pk>',prise_update,name='update'),
     path('create/prise/<int:pk>',price_create,name='create'),
 ]

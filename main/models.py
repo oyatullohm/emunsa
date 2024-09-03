@@ -124,18 +124,19 @@ class Order(models.Model):
     loan = models.BooleanField(default=False)
 
     @property
-    def loan_type(self):
-        if self.loan:
-            return "nasya"
-        return "naq"
-    
-    @property
     def total_summa(self):
         total = self.items.all().aggregate(
             total=Sum(F('count') * F('price'))
         )['total'] or 0
         return total
-
+    
+    
+    @property
+    def loan_type(self):
+        if self.loan:
+            return "nasya"
+        return "naq"
+    
 
 class Cource(models.Model):
     cource = models.PositiveIntegerField(default=0)

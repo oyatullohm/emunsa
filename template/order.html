@@ -100,11 +100,16 @@
      
                   <div class="accordion" id="accordionExample">
         {% for i in page_obj %}
+
+
+
+
+
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne{{i.id}}">
-          
+       
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{i.id}}" aria-expanded="true" aria-controls="collapseOne{{i.id}}">
-              <span style="margin-right: 20px;">{{ i.date|date:"d-m-Y" }}</span><span style="margin-right: 20px;">{{ i.client }}</span><span style="margin-right: 20px;">{{ i.total_summa }} </span> Som
+                <span style="margin-right: 20px;">  {{ i.date|date:"d-m-Y" }}</span> <span style="margin-right: 20px;">{{ i.client }}</span><span style="margin-right: 20px;">{{ i.total_summa }} </span> Som
             </button>
           </h2>
           <div id="collapseOne{{i.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne{{i.id}}" data-bs-parent="#accordionExample">
@@ -120,8 +125,44 @@
               </thead>
               <tbody>
                 {% for j in i.items.all %}
+                <div class="modal fade text-left" id="inlineForm{{j.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="myModalLabel33"> Boshqaru</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form  action="/order-item-edit/" method="post" >
+                                {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-group mb-1">
+                                    <label for="amount" class="form-label">Som </label>
+                                    <input  step="any" name="price" required  value="{{j.price}}" class="form-control" >
+                                </div>  
+                                    <div class="form-group mb-1">
+                                    <label for="amount" class="form-label">Soni </label>
+                                    <input  step="any" name="count" required  value="{{j.count}}" class="form-control" >
+                                </div>
+        
+                                <div style="display: none !important;">
+                                    <input type="number" name="id" value="{{j.id}}" >
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                                        <span> Close</span>
+                                    </button>
+                                    <button type="submit" class="btn btn-primary ms-1" id="payment_create">
+                                        
+                                        <span>  Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
                 <tr>
-                  <td>{{j.product.product.name}}</td>
+                  <td><a href="#"  data-bs-toggle="modal" data-bs-target="#inlineForm{{j.id}}" >{{j.product.product.name}}</a></td>
                   <td>{{j.count}}</td>
                   <td>{{j.price }} </td>
                   <td>{{j.total_price}} </td>

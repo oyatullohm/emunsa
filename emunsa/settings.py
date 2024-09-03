@@ -114,3 +114,22 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# LOGGING = {
+#     'version':1,
+#     'handlers':{
+#          'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': 'debug.log'
+#         },
+#         'console':{'class':'logging.StreamHandler'}
+#     },
+#     'loggers':{
+#         'django.db.backends':{
+#             'handlers':['file'],
+#             'level':'DEBUG'
+#                     }
+#                }
+# }  

@@ -60,6 +60,41 @@
                     <div class="accordion" id="accordionExample">
 
                     {% for i in page_obj %}
+
+                    <div class="modal fade text-left" id="inlineForm-edit-payment{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myModalLabel33"> Boshqaru</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form  action="/payment-edit/?type={{ request.GET.type }}" method="post" >
+                                    {% csrf_token %}
+                                <div class="modal-body">
+                                    <div class="form-group mb-1">
+                                        <label for="amount" class="form-label">Som  </label>
+                                        <input  step="any" name="amount" required  value="{{i.amount}}" class="form-control" >
+                                    </div>  
+
+            
+                                    <div style="display: none !important;">
+                                        <input type="number" name="id" value="{{i.id}}" >
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                                            <span> Close</span>
+                                        </button>
+                                        <button type="submit" class="btn btn-primary ms-1" id="payment_create">
+                                            
+                                            <span>  Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingOne{{i.id}}">
                         
@@ -81,7 +116,7 @@
                             <tbody>
                             
                             <tr>
-                                <td>{{i.client_before_amount}}</td>
+                                <td><a href="#"  data-bs-toggle="modal" data-bs-target="#inlineForm-edit-payment{{i.id}}" >{{i.client_before_amount}}</a></td>
                                 <td>{{i.client_after_amount}}</td>
                                 <td>{{i.cash_before_amount}} </td>
                                 <td>{{i.cash_after_amount}}</td>

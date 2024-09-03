@@ -74,6 +74,7 @@ def save_data(request):
 def save_data_income(request):
     if request.method == 'POST':
         client_id = int( request.POST.get('client'))
+
         isNasyaChecked = request.POST.get('isNasyaChecked')
         client = None
         if client_id !=0 :
@@ -87,7 +88,9 @@ def save_data_income(request):
             cource = cource.cource,
             loan = isNasyaChecked == 'true'
         )
+
         for i in products:
+
             item = IncomeItem.objects.create(
                 product = Product_Count.objects.get(id=int(i['product'])),
                 count = int(i['count']),
@@ -99,9 +102,6 @@ def save_data_income(request):
             income.items.add(item)   
             income.save()
 
-            
-
-            
         if isNasyaChecked== 'true':
             income.client_before = client.amount
             client.amount -= income.total_summa
