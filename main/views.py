@@ -4,15 +4,112 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
 from django.contrib.auth import authenticate, login ,logout 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage 
-from django.db.models import Q , Sum , Case, When, Value, IntegerField
+from django.db.models import Q , Sum , Case, When, Value, IntegerField ,FloatField
 from datetime import datetime, timedelta
 from django.db.models.functions import Coalesce
+from dateutil.relativedelta import relativedelta
+from django.db.models.functions import TruncMonth
 
 
 class HomeVIew(LoginRequiredMixin,View):
     login_url = '/login/'
     def get(self,request):
-        return render(request,'home.html')
+        client = Client.objects.all().aggregate(
+        qarzlar=Sum(Case(When(type=1, then='amount'), default=Value(0), output_field=IntegerField())),
+        haqlar=Sum(Case(When(type=2, then='amount'), default=Value(0), output_field=IntegerField())),) 
+        prduct =   Product_Count.objects.annotate(
+                total=F('count') * F('sum')
+            ).aggregate(
+                total_summa=Sum('total')
+            )['total_summa'] or 0
+
+        cash = Cash.objects.last()
+        total = sum([
+        float(client['haqlar'] or 0),
+        float(client['qarzlar'] or 0),
+        float(prduct),
+        float(cash.amount)
+            ])
+
+        
+        today = datetime.today().date()
+
+     
+        last_12_months = [(today - relativedelta(months=i)).strftime("%Y-%m") for i in range(12)]
+        last_12_months.reverse()  # Ro'yxatni teskari qilamiz
+
+        payments = Payment.objects.filter(
+            date__gte=today - relativedelta(years=1)
+        ).annotate(month=TruncMonth('date')).values('month', 'type')\
+            .annotate(total_amount=Sum('amount')).order_by('-date')
+
+        # Kirim va chiqimlarni to'plab olish
+        revenue_dict = {item['month'].strftime("%Y-%m"): item['total_amount'] for item in payments if item['type'] == 1 or item['type'] == "1"}
+        cost_dict = {item['month'].strftime("%Y-%m"): item['total_amount'] for item in payments if item['type'] == 2 or item['type'] == "2"}
+        cost_ = {item['month'].strftime("%Y-%m"): item['total_amount'] for item in payments if item['type'] == 3 or item['type'] == "3"}
+
+        oldim = [float(revenue_dict.get(month, 0)) for month in last_12_months]
+        berdim = [float(cost_dict.get(month, 0)) for month in last_12_months]
+        ishlatdim = [float(cost_.get(month, 0)) for month in last_12_months]
+        
+        income_items = IncomeItem.objects.filter(
+            items__date__gte=today - relativedelta(years=1)
+        ).annotate(month=TruncMonth('items__date')).values('month')\
+            .annotate(total_amount=Sum(F('count') * F('price'), output_field=FloatField() )).order_by('-month')
+
+        order_items = OrderItem.objects.filter(
+            items__date__gte=today - relativedelta(years=1)
+        ).annotate(month=TruncMonth('items__date')).values('month')\
+            .annotate(total_amount=Sum(F('count') * F('price'), output_field=FloatField())).order_by('-month')
+
+        income_dict = {item['month'].strftime("%Y-%m"): item['total_amount'] for item in income_items}
+        order_dict = {item['month'].strftime("%Y-%m"): item['total_amount'] for item in order_items}
+
+
+        income_totals = [float(income_dict.get(month, 0)) for month in last_12_months]
+        order_totals = [float(order_dict.get(month, 0)) for month in last_12_months]
+
+        context = {
+            'apex_series': [
+                {
+                    "name": "Oldim",
+                    "data": oldim,
+                    "color": "#28a745"  # Yashil rang
+                },
+                {
+                    "name": "berdim",
+                    "data": berdim,
+                    "color": "#007bff"  # Ko'k rang
+                },
+                {
+                    "name": "ishlatdim",
+                    "data": ishlatdim,
+                    "color": "#dc3545"  # Qizil rang
+                }
+            ],
+            'new_apex_series': [
+                {
+                    "name": "Sotib Oldim",
+                    "data": income_totals,
+                    "color": "rgb(156, 13, 234)"  # Yashil rang
+                },
+                {
+                    "name": "Sotdim",
+                    "data": order_totals,
+                    "color": "rgb(228, 209, 8)"  # Ko'k rang
+                },
+
+            ],
+            'last_12_months': last_12_months,
+ 
+            'total':total,
+            'tamnotchi':client['qarzlar'],
+            'client':client['haqlar'],
+            'product':prduct,
+       
+        }
+
+        return render(request,'home.html', context)
     
 
 class EmunsaView(View):
@@ -250,6 +347,7 @@ class SettingsView(LoginRequiredMixin, View):
         cource.date = timezone.now().date()
         cource.save()
         return redirect('main:settings')
+
 
 def detail(request,pk):
     if request.user.is_authenticated :
