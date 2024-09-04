@@ -98,6 +98,7 @@ def save_data_income(request):
             )
             prduct_count = item.product
             prduct_count.count += item.count
+            prduct_count.sum  = item.price
             prduct_count.save()
             income.items.add(item)   
             income.save()

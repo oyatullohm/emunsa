@@ -91,7 +91,7 @@
 <section class="section">
   <div class="row">
       <div class="col-12 col-md-12">
-          <div class="card">
+
               <div class="card-header">
                   
               </div>
@@ -103,7 +103,7 @@
           <h2 class="accordion-header" id="headingOne{{i.id}}">
           
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{i.id}}" aria-expanded="true" aria-controls="collapseOne{{i.id}}">
-              <span style="margin-right: 20px;">{{ i.date|date:"d-m-Y" }}</span><span style="margin-right: 20px;">{{ i.client }}</span><span style="margin-right: 20px;">{{ i.total_summa }} </span> Som
+              <span style="margin-right: 16px;">{{ i.date|date:"d-m-Y" }}</span><span style="margin-right: 16px;">{{ i.client }}</span><span style="margin-right: 16px;">{{ i.total_summa }} </span>
             </button>
           </h2>
           <div id="collapseOne{{i.id}}" class="accordion-collapse collapse" aria-labelledby="headingOne{{i.id}}" data-bs-parent="#accordionExample">
@@ -180,7 +180,7 @@
           {% endfor  %}
       </div>
               </div>
-          </div>
+
       </div>
   </div>
 </section>
