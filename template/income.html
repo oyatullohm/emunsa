@@ -114,7 +114,6 @@
                   <th>Nomi</th>
                   <th>Soni</th>
                   <th>Narhi</th>
-                  <th>jami</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,8 +159,14 @@
                   <td><a href="#"  data-bs-toggle="modal" data-bs-target="#inlineForm{{j.id}}" >{{j.product.product.name}}</a></td>
                   <td>{{j.count}}</td>
                   <td>{{j.price }} </td>
-                  <td>{{j.total_price}} </td>
+                 
                 </tr>
+                <br>
+                <tr>
+                    <td>Jami</td>
+                    <td>{{j.total_price}} </td>
+                </tr>
+                <br>
                 {% if i.client %}
                 <tr>
                   <td>{{i.loan_type}}</td>

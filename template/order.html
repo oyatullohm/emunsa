@@ -116,7 +116,6 @@
                   <th>Nomi</th>
                   <th>Soni</th>
                   <th>Narhi</th>
-                  <th>jami</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,7 +160,11 @@
                   <td><a href="#"  data-bs-toggle="modal" data-bs-target="#inlineForm{{j.id}}" >{{j.product.product.name}}</a></td>
                   <td>{{j.count}}</td>
                   <td>{{j.price }} </td>
-                  <td>{{j.total_price}} </td>
+                </tr>
+                <br>
+                <tr>
+                    <td>Jami</td>
+                    <td>{{j.total_price}} </td>
                 </tr>
                 <br>
                 {% if i.client %}
@@ -255,6 +258,17 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+
+document.getElementById('client').addEventListener('change', function() {
+        var nasyaCheckbox = document.getElementById('nasya');
+        if (this.value === "0") {
+            nasyaCheckbox.checked = false;
+            nasyaCheckbox.disabled = true;
+        } else {
+            nasyaCheckbox.disabled = false;
+        }
+    });
+
   // Yangi qator qo'shish funksiyasi
   function addRow() {
       var table = document.getElementById("productTable").getElementsByTagName('tbody')[0];

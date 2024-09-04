@@ -64,6 +64,22 @@ def save_data(request):
                 cash.save()
                 payment.cash_after_amount = cash.amount
                 payment.save()
+        else:
+            if isNasyaChecked == 'false':
+                order.save()
+                payment = Payment.objects.create(
+                    type = 1,
+                    date = timezone.now().date(),
+                    amount = order.total_summa,
+                    cource = cource.cource,
+                )
+                cash = Cash.objects.last()
+                payment.cash_before_amount = cash.amount
+                cash.amount += float(payment.amount)
+                cash.save()
+                payment.cash_after_amount = cash.amount
+                payment.save()
+            pass 
         return JsonResponse({'status': 'success'})
 
     return JsonResponse({'status': 'failed'}, status=400)
